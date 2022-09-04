@@ -58,18 +58,35 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 
-let newName = () => prompt("Enter the name of the new contact: ")
-let newPhoneNumber = () => prompt("Enter the phone number of the new constact: ")
-
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
+    if (persons.find(p => p.name === body.name)) {
+        return response.status(400).json({
+            error: 'name must be unique'
+        })
+    }
+
+    if (!body.name) {
+        return response.status(400).json({
+            error: 'name is missing'
+        })
+    }
+
+    if (!body.number) {
+        return response.status(400).json({
+            error: 'number is missing'
+        })
+    }
+
     const person = {
         id: new Date().getTime() * Math.random() * 1000000,
-        name: newName(),
-        number: newPhoneNumber()
+        name: body.name,
+        number: body.number
     }
+
+    persons = persons.concat(person)
 
     response.json(person)    
 })
