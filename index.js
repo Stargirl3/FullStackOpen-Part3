@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
+const test = 5
+
 let persons = [
     {
         "id": 1,
@@ -51,6 +55,23 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.filter(person => person.id !== id)
 
     response.status(204).end()
+})
+
+
+let newName = () => prompt("Enter the name of the new contact: ")
+let newPhoneNumber = () => prompt("Enter the phone number of the new constact: ")
+
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    const person = {
+        id: new Date().getTime() * Math.random() * 1000000,
+        name: newName(),
+        number: newPhoneNumber()
+    }
+
+    response.json(person)    
 })
 
 const PORT = 3001
