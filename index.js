@@ -1,7 +1,9 @@
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
 
-app.use(express.json())
+app.use(morgan('tiny'))
 
 const test = 5
 
@@ -28,54 +30,54 @@ let persons = [
     }
 ]
 
-app.get('/api/persons', (request, response) => {
-    response.json(persons)
+app.get('/api/persons', function(req, res) {
+    res.send(persons)
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
+app.get('/api/persons/:id', function (req, res) {
+    const id = Number(req.params.id)
     const person = persons.find(person => person.id === id)
 
     if(person) {
-        response.json(person)
+        res.send(person)
     } else {
-        response.status(404).end()
+        res.status(404).end()
     }
 })
 
-app.get('/info', (request, response) => {
-    response.send(`
+app.get('/info', function (req, res) {
+    res.send(`
     <p>The phonebook has ${persons.length} contacts in it.</p>
-    <p>${new Date().toString()}</p>`
-    )
+    <p>${new Date().toString()}</p>
+    `)
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
+app.delete('/api/persons/:id', function (req, res) {
+    const id = Number(req.params.id)
     persons = persons.filter(person => person.id !== id)
 
-    response.status(204).end()
+    res.status(204).end()
 })
 
 
 
-app.post('/api/persons', (request, response) => {
-    const body = request.body
+app.post('/api/persons', function (req, res) {
+    const body = req.body
 
     if (persons.find(p => p.name === body.name)) {
-        return response.status(400).json({
+        return res.status(400).json({
             error: 'name must be unique'
         })
     }
 
     if (!body.name) {
-        return response.status(400).json({
+        return res.status(400).json({
             error: 'name is missing'
         })
     }
 
     if (!body.number) {
-        return response.status(400).json({
+        return res.status(400).json({
             error: 'number is missing'
         })
     }
@@ -88,9 +90,10 @@ app.post('/api/persons', (request, response) => {
 
     persons = persons.concat(person)
 
-    response.json(person)    
+    res.json(person)    
 })
 
 const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+    console.log(`Sample app listening at http://localhost:${PORT}`)
+})
