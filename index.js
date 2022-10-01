@@ -3,9 +3,15 @@ const morgan = require('morgan')
 
 const app = express()
 
-app.use(morgan('tiny'))
+app.use(express.json())
 
-const test = 5
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+morgan.token('body', (req, res) => {
+    if (req.method === "POST")
+    return JSON.stringify(req.body)
+})
+
 
 let persons = [
     {
@@ -30,11 +36,11 @@ let persons = [
     }
 ]
 
-app.get('/api/persons', function(req, res) {
+app.get('/api/persons', (req, res) => {
     res.send(persons)
 })
 
-app.get('/api/persons/:id', function (req, res) {
+app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     const person = persons.find(person => person.id === id)
 
@@ -45,14 +51,14 @@ app.get('/api/persons/:id', function (req, res) {
     }
 })
 
-app.get('/info', function (req, res) {
+app.get('/info', (req, res) => {
     res.send(`
     <p>The phonebook has ${persons.length} contacts in it.</p>
     <p>${new Date().toString()}</p>
     `)
 })
 
-app.delete('/api/persons/:id', function (req, res) {
+app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     persons = persons.filter(person => person.id !== id)
 
@@ -61,9 +67,9 @@ app.delete('/api/persons/:id', function (req, res) {
 
 
 
-app.post('/api/persons', function (req, res) {
+app.post('/api/persons', (req, res) => {
     const body = req.body
-
+    
     if (persons.find(p => p.name === body.name)) {
         return res.status(400).json({
             error: 'name must be unique'
@@ -90,8 +96,11 @@ app.post('/api/persons', function (req, res) {
 
     persons = persons.concat(person)
 
-    res.json(person)    
+    res.json(person) 
+
 })
+
+
 
 const PORT = 3001
 app.listen(PORT, () => {
