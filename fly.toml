@@ -9,6 +9,7 @@ processes = []
   image = "flyio/hellofly:latest"
 
 [env]
+  PORT = "8080"
 
 [experimental]
   allowed_public_ports = []
