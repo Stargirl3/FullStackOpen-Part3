@@ -92,7 +92,9 @@ app.post('/api/persons', (req, res) => {
             error: 'number is missing'
         })
     }
-
+//new Date().valueOf() same as new Date().getTime()
+//Math.floor / ceil / round
+//Date.now() instead of new Date().getTime()
     const person = {
         id: new Date().getTime() * Math.random() * 1000000,
         name: body.name,
